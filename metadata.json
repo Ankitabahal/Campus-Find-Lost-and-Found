@@ -2,5 +2,7 @@
   "name": "CampusFind — Smart Lost & Found System",
   "description": "Smart lost-and-found platform for college students with item reporting, attribute matching, ownership claims, handovers, notifications, and admin moderation.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

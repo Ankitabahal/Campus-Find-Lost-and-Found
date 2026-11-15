@@ -1,3 +1,6 @@
+> **Live Website:** https://campusfind2026.ai.studio  
+> **GitHub Repository:** https://github.com/Ankitabahal/Campus-Find-Lost-and-Found
+
 # CampusFind — Smart Lost & Found System
 
 A full-stack campus lost-and-found web application with React + Vite, Node.js + Express, and MySQL (with an isolated local SQLite fallback for workspace development).

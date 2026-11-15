@@ -48,30 +48,61 @@ export async function initializeDatabase() {
   await seedAdmin();
 }
 
+function isOriginAllowed(req, allowedOrigins) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+
+  const normalized = origin.replace(/\/+$/, '');
+  if (allowedOrigins.includes('*') || allowedOrigins.includes(normalized)) {
+    return true;
+  }
+
+  if (process.env.APP_URL && normalized === process.env.APP_URL.replace(/\/+$/, '')) {
+    return true;
+  }
+
+  try {
+    const originUrl = new URL(origin);
+    const forwardedHost = String(req.headers['x-forwarded-host'] || '')
+      .split(',')[0]
+      .trim()
+      .toLowerCase();
+    const requestHost = String(req.headers.host || '').trim().toLowerCase();
+
+    if (
+      originUrl.host.toLowerCase() === requestHost ||
+      (forwardedHost && originUrl.host.toLowerCase() === forwardedHost)
+    ) {
+      return true;
+    }
+
+    if (
+      originUrl.protocol === 'https:' &&
+      (originUrl.hostname.endsWith('.ai.studio') || originUrl.hostname.endsWith('.run.app'))
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
 export function createApp() {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
   const app = express();
+  app.set('trust proxy', 1);
   const allowedOrigins = parseAllowedOrigins();
 
-  app.use(
-    cors({
-      origin(origin, callback) {
-        if (!origin) return callback(null, true);
-        const normalized = origin.replace(/\/+$/, '');
-        if (allowedOrigins.includes('*') || allowedOrigins.includes(normalized)) {
-          return callback(null, true);
-        }
-        if (process.env.APP_URL && normalized === process.env.APP_URL.replace(/\/+$/, '')) {
-          return callback(null, true);
-        }
-        return callback(new Error('Origin not allowed by CORS'));
-      },
-      credentials: true,
-    })
-  );
+  const apiCors = cors((req, callback) => {
+    const allowed = isOriginAllowed(req, allowedOrigins);
+    callback(null, { origin: allowed, credentials: true });
+  });
 
+  app.use('/api', apiCors);
   app.use(express.json({ limit: '2mb' }));
-  app.use('/uploads', express.static(UPLOADS_DIR));
+  app.use('/uploads', cors(), express.static(UPLOADS_DIR));
 
   app.get('/api/health', async (req, res) => {
     try {

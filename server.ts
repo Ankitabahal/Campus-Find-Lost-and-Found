@@ -21,6 +21,9 @@ async function startServer() {
   } else {
     const distDir = path.resolve(__dirname, 'dist');
     app.use(express.static(distDir));
+    app.get('/assets/*', (req, res) => {
+      res.status(404).end();
+    });
     app.get('*', (req, res) => {
       res.sendFile(path.join(distDir, 'index.html'));
     });
