@@ -1,0 +1,14 @@
+CAMPUSFIND — START HERE
+
+1) Install Node.js (18+) and MySQL 8.
+2) In MySQL Workbench, execute server/schema.sql.
+3) Copy server/.env.example to server/.env and enter your MySQL password.
+4) Open a terminal in this folder and run: npm run install:all
+5) Then run: npm run dev
+6) Open: http://localhost:5173
+
+Admin demo login (change before use):
+Email: admin@campusfind.edu
+Password: ChangeMe123!
+
+See README.md for complete instructions and project notes.
